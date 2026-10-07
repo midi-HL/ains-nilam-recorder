@@ -92,7 +92,9 @@ Submit A1 → Submit A2 → wait 3 min → next book
 
 ### 3. Daily limit
 
-User reports ~30 books per day per account. This is a soft limit that resets daily. Not precisely confirmed by this tool.
+**Tested up to 31 books per account — still successful, no limit hit.**
+
+The user previously reported a ~30 book/day cap when submitting manually, but testing on 2026-10-07 showed the API accepting at least 31 books per account without any rejection. The daily limit may have been raised, or it may reset at a different time of day. Further testing needed to find the actual ceiling.
 
 ### 4. Cookie lifespan
 
