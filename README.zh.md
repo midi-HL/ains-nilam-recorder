@@ -96,26 +96,49 @@ AINS 网站是基于 Yii2 PHP 框架。逆向发现的接口：
 
 用户之前手动记录时上限约为 30 本/天，可能系统后来调高了。
 
-### 4. Cookie 有效期
+### 4. Cookie 有效期（服务器端控制，无法永久）
 
-- `PHPSESSID`：会话 Cookie
-- `_csrf`：会话 Cookie
-- `_identity`：86400 秒（24 小时）
+以下 Cookie 全部由 AINS 服务器设置，客户端无法延长：
 
-如果提交开始跳转到登录页，说明 Cookie 过期了，需要用户重新提供。
+| Cookie | 有效期 | 说明 |
+|---|---|---|
+| `PHPSESSID` | PHP 会话（服务器控制，通常数小时） | 浏览器关闭即失效，或服务器自动清理 |
+| `_csrf` | 跟随 PHPSESSID | |
+| `_identity` | 86400 秒（24 小时） | Yii2 "记住我" Cookie |
+
+**无法获取永久 Cookie** —— 服务器控制会话时长，没有暴露 API token 或 refresh token。
+
+**实际工作流程**：用户每天早上打开 Chrome 登录一次，导出最新 Cookie 发给 AI，AI 就可以跑一整天（约50本上限）。
+
+#### 最简单的 Cookie 提取方式（推荐）
+
+安装 **Cookie Editor** Chrome 插件：
+👉 [Cookie Editor — Chrome 网上应用店](https://chromewebstore.google.com/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm?hl=zh-CN)
+
+步骤：
+1. 在 Chrome 登录 `ains.moe.gov.my`
+2. 点击 Cookie Editor 插件图标
+3. 点击 **导出 (Export)** → 选择 **Header String** 格式
+4. 复制并发送给 AI
+
+如果提交开始跳转到登录页，说明 Cookie 过期了，重复以上步骤即可。
 
 ---
 
 ## 配置方法
 
-### 第一步：获取 Cookie
+### 第一步：获取 Cookie（两种方法）
 
-1. 在 Chrome 浏览器登录 `ains.moe.gov.my`（Google 登录）
+**方法 A —— Chrome 插件（推荐）：**
+1. 安装 [Cookie Editor](https://chromewebstore.google.com/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm?hl=zh-CN) 插件
+2. 在 Chrome 登录 `ains.moe.gov.my`
+3. 点击插件图标 → **导出 (Export)** → **Header String** 格式 → 复制
+4. 第二个账号重复同样操作
+
+**方法 B —— F12 开发者工具：**
+1. 在 Chrome 登录 `ains.moe.gov.my`（Google 登录）
 2. 按 F12 → **Application** 标签 → **Cookies** → `https://ains.moe.gov.my`
-3. 复制所有 Cookie，格式为分号连接的字符串：
-   ```
-   PHPSESSID=abc123; _csrf=def456; _identity=ghi789;
-   ```
+3. 手动复制所有 `name=value`，用分号连接
 4. 第二个账号重复同样操作
 
 ### 第二步：保存 Cookie

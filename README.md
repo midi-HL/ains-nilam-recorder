@@ -94,26 +94,49 @@ Submit A1 → Submit A2 → wait 3 min → next book
 
 Earlier manual testing by the user reported ~30 books/day; the limit may have been raised since.
 
-### 4. Cookie lifespan
+### 4. Cookie lifespan (server-controlled, not permanent)
 
-- `PHPSESSID`: session cookie
-- `_csrf`: session cookie
-- `_identity`: 86400 seconds (24 hours)
+These are set by the AINS server — the client cannot extend them:
 
-If submissions return login-page redirects, cookies have expired — user needs to provide fresh ones.
+| Cookie | Lifespan | Notes |
+|---|---|---|
+| `PHPSESSID` | PHP session (server-controlled, typically hours) | Dies when browser closes or server GC cleans it up |
+| `_csrf` | Follows PHPSESSID | |
+| `_identity` | 86400 seconds (24 hours) | Yii2 "remember me" cookie |
+
+**No permanent cookies are possible** — the server controls session duration. There is no API token or refresh token exposed.
+
+**Practical workflow**: User opens Chrome each morning, logs in, exports fresh cookies, sends to AI. The AI can then run all day (up to ~50 books).
+
+#### Easiest way to extract cookies (recommended)
+
+Install the **Cookie Editor** Chrome extension:
+👉 [Cookie Editor — Chrome Web Store](https://chromewebstore.google.com/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm?hl=en)
+
+Steps:
+1. Log into `ains.moe.gov.my` in Chrome
+2. Click the Cookie Editor extension icon
+3. Click **Export** → select **Header String** format
+4. Copy and send to the AI
+
+If submissions return login-page redirects, cookies have expired — repeat the steps above.
 
 ---
 
 ## Setup
 
-### Step 1: Get cookies
+### Step 1: Get cookies (two methods)
 
-1. Log into `ains.moe.gov.my` in Chrome (Google OAuth)
+**Method A — Chrome extension (recommended):**
+1. Install [Cookie Editor](https://chromewebstore.google.com/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm?hl=en)
+2. Log into `ains.moe.gov.my` in Chrome
+3. Click extension icon → **Export** → **Header String** → copy
+4. Repeat for the second account
+
+**Method B — F12 Developer Tools:**
+1. Log into `ains.moe.gov.my` in Chrome
 2. Press F12 → **Application** tab → **Cookies** → `https://ains.moe.gov.my`
-3. Copy all cookies as a semicolon-joined string:
-   ```
-   PHPSESSID=abc123; _csrf=def456; _identity=ghi789;
-   ```
+3. Manually copy all `name=value` pairs joined by semicolons
 4. Repeat for the second account
 
 ### Step 2: Save cookies

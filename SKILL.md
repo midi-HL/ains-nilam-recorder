@@ -21,11 +21,19 @@ Submits book records to `POST /reading-record/saverecord` using raw HTTP request
 
 User logs into ains.moe.gov.my on their own browser (Google OAuth works there), then provides cookies.
 
-**How user gets cookies:**
+**Recommended: Cookie Editor Chrome extension**
+1. User installs [Cookie Editor](https://chromewebstore.google.com/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm?hl=en)
+2. Logs into ains.moe.gov.my
+3. Clicks extension → Export → Header String → copies
+4. Sends to AI
+
+**Alternative: F12 Developer Tools**
 1. Log into ains.moe.gov.my in Chrome
 2. F12 → Application tab → Cookies → https://ains.moe.gov.my
 3. Copy all cookie name=value pairs as a semicolon-joined string
 4. Repeat for second account
+
+If user hasn't provided cookies yet, tell them to install the Cookie Editor extension above and export from ains.moe.gov.my.
 
 Save in `cookies.json`:
 ```json
