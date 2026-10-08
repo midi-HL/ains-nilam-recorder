@@ -12,7 +12,7 @@ Submits book records to `POST /reading-record/saverecord` using raw HTTP request
 | Rule | Detail |
 |---|---|
 | **Cooldown** | Each account must wait **180 seconds (3 minutes)** between submissions. If you submit too soon, server returns plain text `failed`. |
-| **Daily limit** | User reports ~30 books/day per account. Not yet confirmed by this skill. Test carefully. |
+| **Daily limit** | **~50 books/day per account** (tested 2026-10-08: ~49 succeeded before both accounts returned `failed`). Resets next day. |
 | **Dual account** | Two accounts are independent. Submit to A1 then A2 back-to-back, THEN wait 3 minutes. Do NOT wait between A1 and A2. |
 | **Success response** | HTTP 200, body is exactly `success` (plain text). Anything else = failed. |
 | **Session cookies** | `PHPSESSID` + `_csrf` + `_identity` cookies. `_identity` lasts 24 hours. Cookies may need refreshing. |
@@ -125,7 +125,7 @@ for i, book in enumerate(books):
 
 1. **First retry**: wait 180 seconds, then try the same book again. Most likely cause = cooldown not elapsed.
 2. **Check cookies**: if CSRF extraction fails or response is a login page, cookies expired — user needs to provide fresh ones.
-3. **Check daily limit**: if both accounts return `failed` after proper 3-min waits, you may have hit the daily cap (~30 books).
+3. **Check daily limit**: if both accounts return `failed` after proper 3-min waits, you have likely hit the daily cap (~50 books/day). Stop and resume tomorrow.
 4. **Don't spam**: repeated failed submissions can flag the account.
 
 ## Book Data Generation
