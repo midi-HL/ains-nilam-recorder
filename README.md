@@ -98,15 +98,17 @@ Earlier manual testing by the user reported ~30 books/day; the limit may have be
 
 These are set by the AINS server — the client cannot extend them:
 
-| Cookie | Lifespan | Notes |
+| Cookie | Declared lifespan | Actual observed behavior |
 |---|---|---|
-| `PHPSESSID` | PHP session (server-controlled, typically hours) | Dies when browser closes or server GC cleans it up |
-| `_csrf` | Follows PHPSESSID | |
-| `_identity` | 86400 seconds (24 hours) | Yii2 "remember me" cookie |
+| `PHPSESSID` | PHP session (server-controlled) | **Lasted >24 hours** across two days of continuous use (Oct 8–9, 2026). Did not expire at browser close. |
+| `_csrf` | Follows PHPSESSID | Same |
+| `_identity` | 86400 seconds (24 hours) declared | Actually lasted >24 hours in practice. The 24h value in the cookie metadata is the *configured* value, not a hard expiry. |
+
+**Key finding (tested 2026-10-09):** Cookies logged in on Oct 8 remained fully valid on Oct 9 — no re-login needed. The PHP session is server-side and is not destroyed by browser closure; it persists until the server garbage-collects it (likely after longer inactivity).
 
 **No permanent cookies are possible** — the server controls session duration. There is no API token or refresh token exposed.
 
-**Practical workflow**: User opens Chrome each morning, logs in, exports fresh cookies, sends to AI. The AI can then run all day (up to ~50 books).
+**Practical workflow**: User logs in once, exports cookies. The AI can then run for multiple days until the server finally invalidates the session. If submissions start returning login redirects, re-export.
 
 #### Easiest way to extract cookies (recommended)
 
